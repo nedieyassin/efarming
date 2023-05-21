@@ -1,8 +1,15 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
 import Layout from '../layout/index.vue'
 import Home from '../pages/home/index.vue'
+
 import QuickHelp from '../pages/quickhelp/index.vue'
+import QuickHelpList from '../pages/quickhelp/list.vue'
+import QuickHelpDetail from '../pages/quickhelp/detail.vue'
+
 import Chat from '../pages/chat/index.vue'
+import ChatList from '../pages/chat/list.vue'
+import ChatRoom from '../pages/chat/chat.vue'
+
 import Profile from '../pages/profile/index.vue'
 
 import HomePage from '../pages/home/Home.vue'
@@ -28,10 +35,31 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: 'quick-help',
                 component: QuickHelp,
+                children: [
+                    {
+                        path: '',
+                        component: QuickHelpList,
+                    },
+                    {
+                        path: 'detail',
+                        component: QuickHelpDetail,
+                    },
+                ]
             },
             {
                 path: 'chat',
                 component: Chat,
+                children: [
+                    {
+                        path: '',
+                        component: ChatList,
+                    },
+                    {
+                        path: 'room',
+                        meta: {no_nav: true},
+                        component: ChatRoom,
+                    },
+                ]
             },
             {
                 path: 'profile',

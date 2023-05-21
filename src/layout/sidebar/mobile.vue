@@ -1,7 +1,6 @@
 <template>
-    <div class="h-full w-24">
-        <div class="flex flex-col gap-4 select-none">
-            <!--                    -->
+    <div class="md:hidden fixed left-0 bg-white py-3 bottom-0 w-full">
+        <div class="flex justify-evenly gap-4 select-none">
             <router-link to="/app/home"
                          v-slot="{isActive}"
                          class="group flex cursor-pointer flex-col items-center justify-center">
@@ -15,7 +14,6 @@
                             Home
                 </span>
             </router-link>
-            <!--                    -->
             <router-link to="/app/quick-help"
                          v-slot="{isActive}"
                          class="group flex cursor-pointer flex-col items-center justify-center">
@@ -40,13 +38,9 @@
                     </svg>
                 </div>
                 <span class="text-sm text-center">
-                           Chat
+                           Chats
                         </span>
             </router-link>
-            <!--                    -->
-            <div class="border-t mx-4">
-
-            </div>
             <!--                    -->
             <router-link to="/app/profile"
                          v-slot="{isActive}"

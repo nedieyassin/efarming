@@ -52,12 +52,13 @@ import {useFirebaseAuth} from "vuefire";
 import {signInWithEmailAndPassword} from "firebase/auth";
 import {onMounted, reactive, ref} from "vue";
 import {useCurrentUser} from 'vuefire'
-import router from "../../router";
+import { useRouter } from "vue-router";
 
 
 const auth = useFirebaseAuth();
 const user = useCurrentUser();
 
+const router = useRouter()
 
 //
 const is_loading = ref(false);
@@ -77,6 +78,8 @@ onMounted(() => {
 })
 
 const login = () => {
+     router.push({path:'/app'});
+    return;
     if (!is_loading.value) {
         is_loading.value = true;
         signInWithEmailAndPassword(auth!, auth_form.email, auth_form.password)

@@ -54,7 +54,7 @@
                 <div ref="scroll_ghost"></div>
             </div>
             <div class="absolute bottom-0 w-full">
-                <div class="relative pt-4 justify-center flex gap-3 md:gap-4 bg-primary-50">
+                <div class="relative pt-4 justify-center flex gap-3 md:gap-4 bg-primary-200">
                     <button @click="onScrollToBottom" v-if="!is_at_bottom"
                             class="absolute hover:bg-gray-200 transition-all -top-16 justify-self-center flex p-2 bg-white shadow-xl rounded-full border">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">

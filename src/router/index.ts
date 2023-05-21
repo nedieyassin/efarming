@@ -10,19 +10,16 @@ import Chat from '../pages/chat/index.vue'
 import ChatList from '../pages/chat/list.vue'
 import ChatRoom from '../pages/chat/chat.vue'
 
-import Profile from '../pages/profile/index.vue'
-
-import HomePage from '../pages/home/Home.vue'
+import Profile from '../pages/profile/index.vue' 
 
 
-import Auth from '../pages/auth/index.vue'
+import AuthPage from '../pages/auth/index.vue'
 
 const routes: Array<RouteRecordRaw> = [
-    // {
-    //     path: '/',
-    //     component: Auth,
-    //     redirect:'/app'
-    // },
+    {
+        path: '/',
+        component: AuthPage,
+    },
     {
         path: '/app',
         component: Layout,

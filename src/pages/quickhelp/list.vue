@@ -28,7 +28,7 @@
         <div class="flex gap-3 py-4">
             <input type="search"
                    placeholder="Type to search"
-                   class="bg-primary-200 rounded-full focus:bg-primary-300 transition-all md:text-xl p-2 px-6 w-full outline-none placeholder-primary-600">
+                   class="bg-primary-300 rounded-full focus:bg-primary-400 transition-all md:text-xl p-2 px-6 w-full outline-none placeholder-primary-600">
             <div>
                 <button class="flex items-center justify-center text-primary-50 h-10 w-10  md:h-14 md:w-14  bg-primary-500 hover:bg-primary-600 shadow rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">

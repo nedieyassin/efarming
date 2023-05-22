@@ -4,7 +4,7 @@
         <div class="h-full flex flex-1">
             <SidebarDesktop class="hidden md:block"/>
             <div class="h-full flex flex-1 md:pr-4 md:pb-4">
-                <div class="relative flex-1 bg-gray-100 ring-1 ring-primary-400 md:rounded-[2em] p-3 md:p-5">
+                <div class="relative flex-1 bg-primary-50 md:rounded-[2em] p-3 md:p-5">
                     <router-view></router-view>
                     <SidebarMobile v-if="!$route.meta.no_nav"  class=""/>
                 </div>

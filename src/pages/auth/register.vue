@@ -9,9 +9,18 @@
             </div>
             <h1 class="text-4xl font-bold text-center">E-Farming</h1>
             <div class="py-6 md:w-96 w-full">
-                <form @submit.prevent="login" class="flex flex-col gap-3 py-6">
+                <form @submit.prevent="register" class="flex flex-col gap-3 py-6">
                     <div v-if="message" class="text-red-400">
                         {{ message }}
+                    </div>
+                    <div>
+                        <label for="name">Full name</label>
+                        <input v-model="auth_form.full_name"
+                               type="text"
+                               id="name"
+                               required
+                               placeholder="Enter full name"
+                               class="w-full border-2 border-black py-1.5 px-3 rounded-md outline-none">
                     </div>
                     <div>
                         <label for="email">Email</label>
@@ -32,11 +41,20 @@
                                class="w-full border-2 border-black py-1.5 px-3 rounded-md outline-none">
                     </div>
                     <div>
+                        <label for="confpassword">Confirm Password</label>
+                        <input v-model="auth_form.confpassword"
+                               type="password"
+                               id="confpassword"
+                               required
+                               placeholder="Confirm password"
+                               class="w-full border-2 border-black py-1.5 px-3 rounded-md outline-none">
+                    </div>
+                    <div>
                         <button type="submit"
                                 :disabled="is_loading || !auth_form.password ||!auth_form.email "
                                 :class="[!is_loading && auth_form.password && auth_form.email ?'bg-primary-500 hover:bg-primary-600 shadow':'bg-gray-400']"
                                 class="flex justify-center w-full text-center gap-4 py-3 px-5 transition-all   rounded-md  text-white">
-                            <span v-if="!is_loading">Login</span>
+                            <span v-if="!is_loading">Register</span>
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 animate-spin" viewBox="0 0 24 24">
                                 <path fill="currentColor"
                                       d="M18.364 5.63604L16.9497 7.05025C15.683 5.7835 13.933 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19C15.866 19 19 15.866 19 12H21C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.4853 3 16.7353 4.00736 18.364 5.63604Z"></path>
@@ -44,8 +62,8 @@
                         </button>
                     </div>
                     <div>
-                        If you don't have an account,
-                        <router-link to="/register" class="font-bold text-primary-700 hover:underline">Register</router-link>
+                        If you already have an account,
+                        <router-link to="/" class="font-bold text-primary-700 hover:underline">Login</router-link>
                     </div>
                 </form>
             </div>
@@ -54,15 +72,13 @@
 </template>
 <script lang="ts" setup>
 import {useFirebaseAuth} from "vuefire";
-import {signInWithEmailAndPassword} from "firebase/auth";
+import {createUserWithEmailAndPassword} from "firebase/auth";
 import {onMounted, reactive, ref} from "vue";
-import {useCurrentUser} from 'vuefire'
 import {useRouter} from "vue-router";
+import {Profiles} from "../../model/profiles";
 
 
 const auth = useFirebaseAuth();
-const user = useCurrentUser();
-
 const router = useRouter()
 
 //
@@ -70,27 +86,34 @@ const is_loading = ref(false);
 const message = ref('');
 //
 const auth_form = reactive({
+    full_name: '',
     email: '',
-    password: ''
+    password: '',
+    confpassword: '',
 })
 
-onMounted(() => {
-    if (user.value?.email != null) {
-        if ("email" in user.value) {
-            auth_form.email = user.value.email
-        }
+
+const register = () => {
+    if (auth_form.password !== auth_form.confpassword) {
+        message.value = 'Password confirmation is invalid';
+        setTimeout(() => message.value = '', 5000)
     }
-})
-
-const login = () => {
-    // router.push({path: '/app'});
-    // return;
     if (!is_loading.value) {
         is_loading.value = true;
-        signInWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
+        createUserWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
             .then((userCredential) => {
-                is_loading.value = false;
-                router.push({path: '/app'});
+                new Profiles().setProfile(userCredential.user.uid, {
+                    full_name: auth_form.full_name,
+                    type: 'farmer'
+                }).then(() => {
+                    is_loading.value = false;
+                    router.push({path: '/app'});
+                }).catch((error) => {
+                    message.value = error.message;
+                    setTimeout(() => message.value = '', 5000)
+                    is_loading.value = false;
+                })
+
             })
             .catch((error) => {
                 message.value = error.message;

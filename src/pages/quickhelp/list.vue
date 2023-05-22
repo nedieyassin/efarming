@@ -28,7 +28,7 @@
         <div class="flex gap-3 py-4">
             <input type="search"
                    placeholder="Type to search"
-                   class="bg-primary-200 rounded-full focus:bg-primary-300 transition-all md:text-xl p-2 px-6 w-full outline-none placeholder-primary-600">
+                   class="bg-primary-100 rounded-full focus:bg-primary-200 transition-all md:text-xl p-2 px-6 w-full outline-none placeholder-primary-600">
             <div>
                 <button class="flex items-center justify-center text-primary-50 h-10 w-10  md:h-14 md:w-14  bg-primary-500 hover:bg-primary-600 shadow rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@
             </div>
         </div>
         <div class="relative flex-1 h-full select-none ">
-            <div class="absolute flex w-full h-full overflow-y-auto flex-col gap-4 p-0.5 pb-28 md:pb-3">
+            <div class="absolute rounded-2xl flex w-full h-full overflow-y-auto flex-col gap-4 p-0.5 pb-28 md:pb-3">
                 <router-link to="/app/quick-help/detail" v-for="i in 5" class="shadow p-3 cursor-pointer hover:bg-primary-100 hover:ring-1 ring-primary-400 transition-all rounded-2xl bg-white">
                     <div>
                         <h1 class="text-3xl font-bold p-1">Coughing Chickens and soars on the hens necks</h1>

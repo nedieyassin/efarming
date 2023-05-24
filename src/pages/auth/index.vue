@@ -25,11 +25,19 @@
                     <div>
                         <label for="password">Password</label>
                         <input v-model="auth_form.password"
-                               type="password"
+                               :type="[show_password ? 'text':'password']"
                                id="password"
                                required
                                placeholder="Enter password"
                                class="w-full border-2 border-black py-1.5 px-3 rounded-md outline-none">
+                    </div>
+                    <div @click="show_password = !show_password" class="underline cursor-pointer">
+                       <span v-if="show_password">
+                           Hide password
+                       </span>
+                        <span v-else>
+                          Show password
+                       </span>
                     </div>
                     <div>
                         <button type="submit"
@@ -45,7 +53,8 @@
                     </div>
                     <div>
                         If you don't have an account,
-                        <router-link to="/register" class="font-bold text-primary-700 hover:underline">Register</router-link>
+                        <router-link to="/register" class="font-bold text-primary-700 hover:underline">Register
+                        </router-link>
                     </div>
                 </form>
             </div>
@@ -58,16 +67,18 @@ import {signInWithEmailAndPassword} from "firebase/auth";
 import {onMounted, reactive, ref} from "vue";
 import {useCurrentUser} from 'vuefire'
 import {useRouter} from "vue-router";
+import {useAppStore} from "../../store/app-store";
 
 
 const auth = useFirebaseAuth();
 const user = useCurrentUser();
-
-const router = useRouter()
+const router = useRouter();
+const appstore = useAppStore();
 
 //
 const is_loading = ref(false);
 const message = ref('');
+const show_password = ref(false);
 //
 const auth_form = reactive({
     email: '',
@@ -89,8 +100,11 @@ const login = () => {
         is_loading.value = true;
         signInWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
             .then((userCredential) => {
-                is_loading.value = false;
-                router.push({path: '/app'});
+                appstore.getProfile(userCredential.user.uid).then(() => {
+                    is_loading.value = false;
+                    router.push({path: '/app'});
+
+                })
             })
             .catch((error) => {
                 message.value = error.message;

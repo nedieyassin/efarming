@@ -1,8 +1,19 @@
 <template>
-    <div class="flex flex-col h-full md:px-3">
-        <div class="pb-6">
-            <h1 class="text-2xl font-bold">Quick Help</h1>
-            <h2 class="text-sm font-bold text-primary-700">Explore solutions to common agricultural problems</h2>
+    <div class="flex flex-col h-full">
+        <div class="flex flex-col md:flex-row justify-between">
+            <div class="md:pb-6">
+                <h1 class="text-2xl font-bold">Quick Help</h1>
+                <h2 class="text-sm font-bold text-primary-700">Explore solutions to common agricultural problems</h2>
+            </div>
+            <div v-if="appstore.profile?.type === 'admin'" class="py-3 md:py-0">
+                <router-link :to="`/app/quick-help/add?quickhelp=${id}`"
+                             class="flex justify-center gap-2 px-4 py-2 rounded-full bg-primary-500 hover:bg-primary-600  shadow text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
+                    </svg>
+                    <span>Add new quick help</span>
+                </router-link>
+            </div>
         </div>
         <div class="flex flex-col md:flex-row md:items-center md:gap-3">
             <div>
@@ -40,32 +51,24 @@
         </div>
         <div class="relative flex-1 h-full select-none ">
             <div class="absolute rounded-2xl flex w-full h-full overflow-y-auto flex-col gap-4 p-0.5 pb-28 md:pb-3">
-                <router-link to="/app/quick-help/detail" v-for="i in 5" class="shadow p-3 cursor-pointer hover:bg-primary-100 hover:ring-1 ring-primary-400 transition-all rounded-2xl bg-white">
-                    <div>
-                        <h1 class="text-3xl font-bold p-1">Coughing Chickens and soars on the hens necks</h1>
+                <router-link  :to="`/app/quick-help/detail?quickhelp=${item.id}`" v-for="item in list"
+                             class="shadow p-3 cursor-pointer hover:bg-primary-100 hover:ring-1 ring-primary-400 transition-all rounded-2xl bg-white">
+                    <div class="flex">
+                        <div class="flex-1">
+                            <h1 class="text-3xl font-bold p-1">{{ item.title }}</h1>
+                        </div>
+                        <div v-if="appstore.profile?.type === 'admin'">
+                            <router-link class="flex items-center justify-center h-12 w-12 rounded-full bg-primary-500 hover:bg-primary-600  shadow text-white"
+                                         :to="`/app/quick-help/add?quickhelp=${item.id}`">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M16.7574 2.99666L9.29145 10.4626L9.29886 14.7097L13.537 14.7023L21 7.2393V19.9967C21 20.5489 20.5523 20.9967 20 20.9967H4C3.44772 20.9967 3 20.5489 3 19.9967V3.99666C3 3.44438 3.44772 2.99666 4 2.99666H16.7574ZM20.4853 2.09717L21.8995 3.51138L12.7071 12.7038L11.2954 12.7062L11.2929 11.2896L20.4853 2.09717Z"></path>
+                                </svg>
+                            </router-link>
+                        </div>
                     </div>
-                    <div class="line-clamp-3">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto fugit molestias
-                        quasi soluta vel velit? Cum debitis ducimus incidunt iusto minus, molestias nulla quam, reiciendis
-                        unde vel voluptatem voluptates.
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto fugit molestias
-                        quasi soluta vel velit? Cum debitis ducimus incidunt iusto minus, molestias nulla quam, reiciendis
-                        unde vel voluptatem voluptates.
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto fugit molestias
-                        quasi soluta vel velit? Cum debitis ducimus incidunt iusto minus, molestias nulla quam, reiciendis
-                        unde vel voluptatem voluptates.
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto fugit molestias
-                        quasi soluta vel velit? Cum debitis ducimus incidunt iusto minus, molestias nulla quam, reiciendis
-                        unde vel voluptatem voluptates.
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto fugit molestias
-                        quasi soluta vel velit? Cum debitis ducimus incidunt iusto minus, molestias nulla quam, reiciendis
-                        unde vel voluptatem voluptates.
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto fugit molestias
-                        quasi soluta vel velit? Cum debitis ducimus incidunt iusto minus, molestias nulla quam, reiciendis
-                        unde vel voluptatem voluptates.
-                    </div>
+                    <div class="line-clamp-3" v-html="item.body"></div>
                     <div class="text-xs pt-2">
-                        2 months ago
+                        {{ useTimeAgo(new Date((item.date_updated.seconds * 1000))).value }}
                     </div>
                 </router-link>
             </div>
@@ -73,5 +76,35 @@
     </div>
 </template>
 <script lang="ts" setup>
+import {v4 as uuidv4} from 'uuid';
+import {Quickhelp} from "../../model/quickhelp";
+import {onMounted, Ref, ref} from "vue";
+import {useTimeAgo} from '@vueuse/core'
+import {useAppStore} from "../../store/app-store";
+
+const id = uuidv4();
+
+const appstore = useAppStore()
+
+
+const list = ref([]) as Ref<{
+    id: string,
+    type: string,
+    body: string,
+    title: string,
+    date_updated: { seconds: string }
+}[]>
+
+onMounted(() => {
+    getList();
+});
+
+const getList = () => {
+    new Quickhelp().getQuickHelps().then((res) => {
+        list.value = res;
+        console.log(res);
+    })
+}
+
 
 </script>

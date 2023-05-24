@@ -34,7 +34,7 @@
                     <div>
                         <label for="password">Password</label>
                         <input v-model="auth_form.password"
-                               type="password"
+                               :type="[show_password ? 'text':'password']"
                                id="password"
                                required
                                placeholder="Enter password"
@@ -43,11 +43,19 @@
                     <div>
                         <label for="confpassword">Confirm Password</label>
                         <input v-model="auth_form.confpassword"
-                               type="password"
+                               :type="[show_password ? 'text':'password']"
                                id="confpassword"
                                required
                                placeholder="Confirm password"
                                class="w-full border-2 border-black py-1.5 px-3 rounded-md outline-none">
+                    </div>
+                    <div @click="show_password = !show_password" class="underline cursor-pointer">
+                       <span v-if="show_password">
+                           Hide password
+                       </span>
+                        <span v-else>
+                          Show password
+                       </span>
                     </div>
                     <div>
                         <button type="submit"
@@ -84,6 +92,7 @@ const router = useRouter()
 //
 const is_loading = ref(false);
 const message = ref('');
+const show_password = ref(false);
 //
 const auth_form = reactive({
     full_name: '',

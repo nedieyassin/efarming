@@ -12,7 +12,7 @@
                 </div>
                 <div class="text-center">
                     <div class="flex items-center gap-3 relative pt-10">
-                        <h1 class="text-4xl  font-bold">{{ profile?.full_name }}</h1>
+                        <h1 class="text-4xl  font-bold">{{ appstore.profile?.full_name }}</h1>
                         <button @click="updateName"
                                 class="-right-10 absolute h-10 w-10 rounded-full text-primary-700 flex justify-center items-center hover:bg-primary-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@
                         </button>
                     </div>
                     <div class="flex flex-col items-center justify-center relative">
-                        <h1 class="text-primary-700 font-bold">-{{ profile?.type }}-</h1>
+                        <h1 class="text-primary-700 font-bold">-{{ appstore.profile?.type }}-</h1>
                         <h1 class="text-primary-700">{{ user?.email }}</h1>
                     </div>
                 </div>
@@ -48,27 +48,32 @@ import {useRouter} from "vue-router";
 import {onMounted, Ref, ref} from "vue";
 import {Profiles} from "../../model/profiles";
 import {useCurrentUser} from "vuefire";
+import {useAppStore} from "../../store/app-store";
 
 
 const router = useRouter();
 const user = useCurrentUser();
-const profile = ref(undefined) as Ref<{ full_name: string, type: string } | any | undefined>;
+const appstore = useAppStore();
+
 
 onMounted(() => {
     getProfile();
 })
 
 const getProfile = () => {
-    new Profiles().getProfile(user.value?.uid ?? '').then((res) => {
-        profile.value = res.data();
-    })
+    if (user.value?.uid != null) {
+        appstore.getProfile(user.value?.uid ?? '')
+    }
 }
 
 
 const updateName = () => {
-    addDialog({title: 'Update Name', action: 'Update', value: profile.value?.full_name}).then((res) => {
+    addDialog({title: 'Update Name', action: 'Update', value: appstore.profile?.full_name as string}).then((res) => {
         if (res) {
-            new Profiles().setProfile(user?.value?.uid ?? '', {full_name: res, type: profile.value?.type}).then(() => {
+            new Profiles().setProfile(user?.value?.uid ?? '', {
+                full_name: res as string,
+                type: appstore.profile?.type ?? ''
+            }).then(() => {
                 getProfile();
             })
         }

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full md:px-3">
+    <div class="flex flex-col h-full">
         <div class="md:pb-2">
             <h1 class="text-2xl font-bold">Chats</h1>
             <h2 class="text-sm font-bold text-primary-700">Conversations with agricultural advisors</h2>

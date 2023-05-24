@@ -5,6 +5,7 @@ import Home from '../pages/home/index.vue'
 import QuickHelp from '../pages/quickhelp/index.vue'
 import QuickHelpList from '../pages/quickhelp/list.vue'
 import QuickHelpDetail from '../pages/quickhelp/detail.vue'
+import QuickHelpAdd from '../pages/quickhelp/editor/index.vue'
 
 import Chat from '../pages/chat/index.vue'
 import ChatList from '../pages/chat/list.vue'
@@ -45,6 +46,10 @@ const routes: Array<RouteRecordRaw> = [
                     {
                         path: 'detail',
                         component: QuickHelpDetail,
+                    },
+                    {
+                        path: 'add',
+                        component: QuickHelpAdd,
                     },
                 ]
             },

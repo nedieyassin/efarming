@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full md:px-3">
+    <div class="flex flex-col h-full">
         <div class="flex pb-4 gap-3 items-center border-b">
             <div class="">
                 <button @click="$router.back()"

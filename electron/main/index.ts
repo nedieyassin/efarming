@@ -1,6 +1,7 @@
-import {app, BrowserWindow, shell, ipcMain} from 'electron'
+import {app, BrowserWindow, shell, ipcMain,Menu} from 'electron'
 import {release} from 'node:os'
 import {join} from 'node:path'
+
 
 // The built directory structure
 //
@@ -34,6 +35,12 @@ if (!app.requestSingleInstanceLock()) {
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+const isMac = process.platform === 'darwin'
+const template = [
+
+]
+
+
 let win: BrowserWindow | null = null
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js')
@@ -42,7 +49,7 @@ const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
     win = new BrowserWindow({
-        title: 'Notee',
+        title: 'efarming',
         icon: join(process.env.PUBLIC, 'favicon.ico'),
         webPreferences: {
             preload,
@@ -53,7 +60,11 @@ async function createWindow() {
             contextIsolation: false,
         },
     })
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
 
+
+    win.setMenu(null);
     if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
         win.loadURL(url)
         // Open devTool if the app is not packaged
@@ -72,7 +83,7 @@ async function createWindow() {
         if (url.startsWith('https:')) shell.openExternal(url)
         return {action: 'deny'}
     })
-    // win.webContents.on('will-navigate', (event, url) => { }) #344
+     //win.webContents.on('will-navigate', (event, url) => { }) //#344
 }
 
 app.whenReady().then(createWindow)

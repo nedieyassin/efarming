@@ -1,4 +1,4 @@
-import {collection, doc, setDoc, orderBy, getDoc, getDocs, query} from "firebase/firestore";
+import {collection, doc, setDoc, orderBy, getDoc, deleteDoc, getDocs, query} from "firebase/firestore";
 import {db} from "../services/firebase";
 
 
@@ -27,9 +27,13 @@ export class Quickhelp {
         return await getDoc(doc(this.quickhelpsRef, id));
     }
 
+    async deleteQuickHelp(id: string) {
+        return await deleteDoc(doc(this.quickhelpsRef, id));
+    }
+
 
     async getQuickHelps() {
-        const q = query(this.quickhelpsRef,orderBy("date_updated",'desc'));
+        const q = query(this.quickhelpsRef, orderBy("date_updated", 'desc'));
         const querySnapshot = await getDocs(q);
         const list: unknown | any = [];
         querySnapshot.forEach((doc) => {

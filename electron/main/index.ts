@@ -60,11 +60,13 @@ async function createWindow() {
             contextIsolation: false,
         },
     })
-    const menu = Menu.buildFromTemplate(template)
-    Menu.setApplicationMenu(menu)
 
 
-    win.setMenu(null);
+    // const menu = Menu.buildFromTemplate(template)
+    // Menu.setApplicationMenu(menu)
+
+
+    // win.setMenu(null);
     if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
         win.loadURL(url)
         // Open devTool if the app is not packaged

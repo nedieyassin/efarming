@@ -17,7 +17,23 @@ import SidebarDesktop from './sidebar/desktop.vue'
 import SidebarMobile from './sidebar/mobile.vue'
 import Appbar from './appbar/index.vue'
 import {useRoute} from "vue-router";
+import {useCurrentUser} from "vuefire";
+import {useAppStore} from "../store/app-store";
+import {onMounted} from "vue";
 
 const route = useRoute();
+const user = useCurrentUser();
+const appstore = useAppStore();
+
+
+onMounted(() => {
+  getProfile();
+})
+
+const getProfile = () => {
+  if (user.value?.uid != null) {
+    appstore.getProfile(user.value?.uid ?? '')
+  }
+}
 
 </script>

@@ -11,7 +11,8 @@ import Chat from '../pages/chat/index.vue'
 import ChatList from '../pages/chat/list.vue'
 import ChatRoom from '../pages/chat/chat.vue'
 
-import Profile from '../pages/profile/index.vue'
+import Profile from '../pages/profile/index.vue';
+
 
 
 import AuthPage from '../pages/auth/index.vue'

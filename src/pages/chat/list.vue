@@ -10,7 +10,7 @@
     <div class="relative flex-1 h-full ">
       <div class="absolute flex w-full h-full overflow-y-auto flex-col gap-4 ">
         <div class="flex flex-col md:flex-row md:items-center md:gap-3">
-          <div v-if="appstore.profile?.type ==='advisor'" class="py-2">
+          <div v-if="appstore.profile?.type ==='advisor'" class="flex py-2">
             <div class="rounded-full bg-primary-300 flex">
               <button @click="onChooseType('old')"
                       :class="[type === 'old' ? 'bg-primary-700 text-white':'']"

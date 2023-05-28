@@ -143,7 +143,6 @@ const onSendMessage = () => {
   });
   message_text.value = '';
   addChatAdvisor();
-  onScrollToBottom();
 
 }
 
@@ -155,6 +154,7 @@ const messagesSub = () => {
       ls.push({...doc.data(), id: doc.id});
     });
     messages.value = ls;
+    setTimeout(()=>onScrollToBottom(),900)
 
   });
 }

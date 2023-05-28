@@ -11,6 +11,7 @@ export class Chats {
 
     async setChat(id: string, data: {
         user_id: string,
+        advisor: string,
         title: string,
         type: string,
         farmer_name: string,
@@ -18,6 +19,7 @@ export class Chats {
     }) {
         return await setDoc(doc(this.chatsRef, id), {
             user_id: data.user_id,
+            advisor: data.advisor,
             title: data.title,
             type: data.type,
             farmer_name: data.farmer_name,

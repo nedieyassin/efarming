@@ -124,7 +124,7 @@ const list = ref([]) as Ref<{
   date_created: { seconds: string }
 }[]>;
 
-const type = ref('new');
+const type = ref('old');
 
 const is_loading = ref(false);
 const search_text = ref('');
@@ -185,6 +185,7 @@ const onStartChat = () => {
       const id = uuidv4();
       new Chats().setChat(id, {
         user_id: user.value?.uid ?? "",
+        advisor:'',
         title: res['title'],
         type: res['type'],
         date_created: serverTimestamp(),

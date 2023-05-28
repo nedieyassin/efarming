@@ -126,21 +126,23 @@ watch(() => quickhelp.type, (o,n) => {
 })
 
 const save = () => {
-    cloudSync.saving = true;
-    new Quickhelp().setQuickHelp(
-        route.query.quickhelp as string,
-        {
+    if (quickhelp.title){
+      cloudSync.saving = true;
+      new Quickhelp().setQuickHelp(
+          route.query.quickhelp as string,
+          {
             title: quickhelp.title,
             type: quickhelp.type,
             date_updated: serverTimestamp(),
             body: editor.getHTML(),
-        }
-    ).then(() => {
+          }
+      ).then(() => {
         cloudSync.saving = false;
         cloudSync.changed = false;
-    }).catch(() => {
+      }).catch(() => {
         cloudSync.saving = false;
-    })
+      })
+    }
 }
 
 const update = () => {

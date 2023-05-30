@@ -13,7 +13,9 @@ export const useAppStore = defineStore('app-store', {
     state: (): AppStore => ({
         profile: undefined
     }),
-    getters: {},
+    getters: {
+        profile_type: (state) => state.profile?.type.toLowerCase()
+    },
     actions: {
         async getProfile(id: string) {
             const res = await new Profiles().getProfile(id);

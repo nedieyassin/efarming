@@ -12,7 +12,7 @@ export class Users {
     async updateUser(id: string, data: {
         type: string,
     }) {
-        console.log(data);
+        // console.log(data);
         return await setDoc(doc(this.usersRef, id), {
             type: data.type,
         }, {merge: true});

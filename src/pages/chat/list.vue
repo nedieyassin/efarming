@@ -3,14 +3,14 @@
     <div class="md:pb-2">
       <h1 class="text-2xl font-bold">Chats</h1>
       <h2 class="text-sm font-bold text-primary-700">Conversations with
-        <span v-if="appstore.profile?.type ==='farmer'">agricultural advisors</span>
-        <span v-if="appstore.profile?.type ==='advisor'">farmers</span>
+        <span v-if="appstore.profile_farmer">agricultural advisors</span>
+        <span v-if="appstore.profile_advisor">farmers</span>
       </h2>
     </div>
     <div class="relative flex-1 h-full ">
       <div class="absolute flex w-full h-full overflow-y-auto flex-col gap-4 ">
         <div class="flex flex-col md:flex-row md:items-center md:gap-3">
-          <div v-if="appstore.profile?.type ==='advisor'" class="flex py-2">
+          <div v-if="appstore.profile_advisor" class="flex py-2">
             <div class="rounded-full bg-primary-300 flex">
               <button @click="onChooseType('old')"
                       :class="[type === 'old' ? 'bg-primary-700 text-white':'']"
@@ -60,7 +60,7 @@
             <h1 class="font-bold text-lg line-clamp-1">{{ item.title }}</h1>
             <div class="flex justify-between items-center">
               <div class="text-xs">
-                <span v-if="appstore.profile?.type === 'farmer'">
+                <span v-if="appstore.profile_farmer">
                   <span v-if="item.advisor_name">{{ item.advisor_name }}</span>
                   <span v-else>-no advisor response-</span>
                 </span>
@@ -88,7 +88,7 @@
       </div>
     </div>
     <button
-        v-if="appstore.profile?.type === 'farmer'"
+        v-if="appstore.profile_farmer"
         @click="onStartChat"
         class="fixed text-white hover:bg-primary-800 right-4 md:right-8 md:bottom-8 bottom-28 transition-all  justify-self-center flex p-3 md:p-4 bg-primary-700 shadow-xl rounded-full border">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 md:h-10" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@ onMounted(() => {
 });
 
 const getList = () => {
-  if (appstore.profile?.type === 'farmer') {
+  if (appstore.profile_farmer) {
     is_loading.value = true;
     new Chats().getChats(user.value?.uid ?? "").then((res) => {
       list.value = res;
@@ -144,7 +144,7 @@ const getList = () => {
       is_loading.value = false;
       console.log(err);
     })
-  } else if (appstore.profile?.type === 'advisor') {
+  } else if (appstore.profile_farmer) {
     advGetList();
   }
 }

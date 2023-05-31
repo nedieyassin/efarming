@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold">Quick Help</h1>
         <h2 class="text-sm font-bold text-primary-700">Explore solutions to common agricultural problems</h2>
       </div>
-      <div v-if="appstore.profile?.type === 'admin'" class="py-3 md:py-0">
+      <div v-if="appstore.profile_admin" class="py-3 md:py-0">
         <router-link :to="`/app/quick-help/add?quickhelp=${id}`"
                      class="flex justify-center gap-2 px-4 py-2 rounded-full bg-primary-500 hover:bg-primary-600  shadow text-white">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">

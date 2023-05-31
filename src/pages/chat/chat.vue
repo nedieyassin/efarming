@@ -40,7 +40,7 @@
           <div v-else>
             <div class="flex flex-col items-start">
               <div class="px-3 font-bold text-primary-700">
-               <span v-if="appstore.profile?.type === 'farmer'">
+               <span v-if="appstore.profile_farmer">
                   <span v-if="$route.query.advisor_name">{{ $route.query.advisor_name }}</span>
                   <span v-else>-no advisor response-</span>
                 </span>
@@ -125,7 +125,7 @@ onMounted(() => {
 
 const addChatAdvisor = () => {
   if (!route.query.advisor) {
-    if (appstore.profile?.type == 'advisor' && appstore.profile.full_name) {
+    if (appstore.profile_advisor && appstore.profile?.full_name) {
       new Chats().ownChat(route.query.id as string, {
         advisor: user.value?.uid ?? '',
         advisor_name: appstore.profile.full_name

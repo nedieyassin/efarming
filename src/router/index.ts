@@ -1,11 +1,16 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
-import Layout from '../layout/index.vue'
-import Home from '../pages/home/index.vue'
+import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
 
-import QuickHelp from '../pages/quickhelp/index.vue'
-import QuickHelpList from '../pages/quickhelp/list.vue'
-import QuickHelpDetail from '../pages/quickhelp/detail.vue'
-import QuickHelpAdd from '../pages/quickhelp/editor/index.vue'
+import Layout from '../layout/index.vue';
+import Home from '../pages/home/index.vue';
+
+import QuickHelp from '../pages/quickhelp/index.vue';
+import QuickHelpList from '../pages/quickhelp/list.vue';
+import QuickHelpDetail from '../pages/quickhelp/detail.vue';
+import QuickHelpAdd from '../pages/quickhelp/editor/index.vue';
+
+import Users from '../pages/users/index.vue';
+import UsersList from '../pages/users/list.vue';
+// import UsersDetail from '../pages/users/detail.vue'
 
 import Chat from '../pages/chat/index.vue';
 import ChatList from '../pages/chat/list.vue';
@@ -15,8 +20,8 @@ import Profile from '../pages/profile/Profile.vue';
 
 
 
-import AuthPage from '../pages/auth/index.vue'
-import RegisterPage from '../pages/auth/register.vue'
+import AuthPage from '../pages/auth/index.vue';
+import RegisterPage from '../pages/auth/register.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -51,6 +56,16 @@ const routes: Array<RouteRecordRaw> = [
                     {
                         path: 'add',
                         component: QuickHelpAdd,
+                    },
+                ]
+            },
+            {
+                path: 'users',
+                component: Users,
+                children: [
+                    {
+                        path: '',
+                        component: UsersList,
                     },
                 ]
             },

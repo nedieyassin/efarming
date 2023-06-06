@@ -1,66 +1,56 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex pb-4 gap-3 items-center border-b">
-      <div class="">
-        <button @click="$router.back()"
-                class="flex text-white items-center justify-center rounded-full w-10 h-10 bg-black">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6" viewBox="0 0 24 24">
-            <path fill="currentColor"
-                  d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"></path>
-          </svg>
-        </button>
-      </div>
+  <div class="flex flex-col h-[70vh] w-100 bg-white overflow-clip rounded-3xl shadow-2xl">
+    <div class="flex p-4 gap-3 items-center border-b">
       <div>
-        <h1 class="text-xl font-bold line-clamp-1">{{ $route.query.title }}</h1>
-        <h2 class="text-sm font-bold text-primary-700 uppercase">
-                  <span v-if="appstore.profile?.type === 'farmer'">
-                  <span v-if="$route.query.advisor_name">{{ $route.query.advisor_name }}</span>
-                  <span v-else>-no advisor response-</span>
-                </span>
-          <span v-else>{{ $route.query.farmer_name }}</span>
-        </h2>
+        <h1 class="text-xl font-bold line-clamp-1">E-FARMING AI ASSISTANT</h1>
       </div>
     </div>
     <div class="relative flex flex-col flex-1 h-full">
       <div ref="chat_scroller"
-           class="flex flex-col gap-6 h-full absolute w-full pb-16 md:pb-36 pt-8  overflow-y-auto">
-
+           class="flex flex-col gap-6 px-3 h-full absolute w-full pb-16 md:pb-36 pt-8  overflow-y-auto">
 
         <template v-for="message in messages">
-          <div v-if="message.from === user?.uid">
+          <div v-if="message.role === 'user'">
             <div class="flex flex-col items-end">
               <div class="bg-primary-300 p-4 max-w-[90%] md:max-w-[80%] rounded-2xl">
-                {{ message.text }}
-              </div>
-              <div v-if="message.date_created" class="px-3 text-sm">
-                {{ useTimeAgo(new Date((message.date_created.seconds * 1000))).value }}
+                {{ message.content }}
               </div>
             </div>
           </div>
-          <div v-else>
+          <div v-else-if="message.role === 'assistant'">
             <div class="flex flex-col items-start">
               <div class="px-3 font-bold text-primary-700">
-               <span v-if="appstore.profile_farmer">
-                  <span v-if="$route.query.advisor_name">{{ $route.query.advisor_name }}</span>
-                  <span v-else>-no advisor response-</span>
-                </span>
-                <span v-else>{{ $route.query.farmer_name }}</span>
+                AI ASSISTANT
               </div>
               <div class="bg-primary-700  text-white p-4 max-w-[90%] md:max-w-[80%] rounded-2xl">
-                {{ message.text }}
+                {{ message.content }}
               </div>
-              <div v-if="message.date_created" class="px-3 text-sm">
-                {{ useTimeAgo(new Date((message.date_created.seconds * 1000))).value }}
-              </div>
+
             </div>
           </div>
         </template>
+
+        <div v-if="is_typing">
+          <div class="flex flex-col items-start">
+            <div class="px-3 font-bold text-primary-700">
+              AI ASSISTANT
+            </div>
+            <div class="bg-primary-700  text-white p-4 max-w-[90%] md:max-w-[80%] rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-7 animate-spin" viewBox="0 0 24 24">
+                <path
+                    fill="currentColor"
+                    d="M11.9995 2C12.5518 2 12.9995 2.44772 12.9995 3V6C12.9995 6.55228 12.5518 7 11.9995 7C11.4472 7 10.9995 6.55228 10.9995 6V3C10.9995 2.44772 11.4472 2 11.9995 2ZM11.9995 17C12.5518 17 12.9995 17.4477 12.9995 18V21C12.9995 21.5523 12.5518 22 11.9995 22C11.4472 22 10.9995 21.5523 10.9995 21V18C10.9995 17.4477 11.4472 17 11.9995 17ZM20.6597 7C20.9359 7.47829 20.772 8.08988 20.2937 8.36602L17.6956 9.86602C17.2173 10.1422 16.6057 9.97829 16.3296 9.5C16.0535 9.02171 16.2173 8.41012 16.6956 8.13398L19.2937 6.63397C19.772 6.35783 20.3836 6.52171 20.6597 7ZM7.66935 14.5C7.94549 14.9783 7.78161 15.5899 7.30332 15.866L4.70525 17.366C4.22695 17.6422 3.61536 17.4783 3.33922 17C3.06308 16.5217 3.22695 15.9101 3.70525 15.634L6.30332 14.134C6.78161 13.8578 7.3932 14.0217 7.66935 14.5ZM20.6597 17C20.3836 17.4783 19.772 17.6422 19.2937 17.366L16.6956 15.866C16.2173 15.5899 16.0535 14.9783 16.3296 14.5C16.6057 14.0217 17.2173 13.8578 17.6956 14.134L20.2937 15.634C20.772 15.9101 20.9359 16.5217 20.6597 17ZM7.66935 9.5C7.3932 9.97829 6.78161 10.1422 6.30332 9.86602L3.70525 8.36602C3.22695 8.08988 3.06308 7.47829 3.33922 7C3.61536 6.52171 4.22695 6.35783 4.70525 6.63397L7.30332 8.13398C7.78161 8.41012 7.94549 9.02171 7.66935 9.5Z"></path>
+              </svg>
+            </div>
+
+          </div>
+        </div>
 
 
         <div ref="scroll_ghost"></div>
       </div>
       <div class="absolute bottom-0 w-full">
-        <div class="relative pt-4 justify-center flex gap-3 md:gap-4 bg-primary-50">
+        <div class="relative pt-4 justify-center flex gap-3 md:gap-4 bg-primary-50 p-3">
           <button @click="onScrollToBottom" v-if="!is_at_bottom"
                   class="absolute hover:bg-gray-200 transition-all -top-16 justify-self-center flex p-2 bg-white shadow-xl rounded-full border">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
@@ -68,14 +58,13 @@
                   d="M12.9999 16.1716L18.3638 10.8076L19.778 12.2218L11.9999 20L4.22168 12.2218L5.63589 10.8076L10.9999 16.1716V4H12.9999V16.1716Z"></path>
             </svg>
           </button>
-          <textarea v-model="message_text" placeholder="Write to the advisor explaining your problems..."
-                    class="p-2 px-4 rounded-xl md:rounded-[1.2em] max-h-96 outline-none ring-1 focus:ring-2 w-full ring-primary-400 placeholder-gray-300"
-          ></textarea>
+          <textarea v-model="message_text" placeholder="Ask Assistant solutions to your problems"
+                    class="p-2 px-4 rounded-xl md:rounded-[1.2em] max-h-96 outline-none ring-1 focus:ring-2 w-full ring-primary-400 placeholder-gray-300"></textarea>
           <div>
             <button
                 @click="onSendMessage"
                 :disabled="!message_text"
-                :class="[message_text ?'bg-primary-700 hover:bg-primary-800 shadow':'bg-gray-400']"
+                :class="[message_text ?'hover:bg-primary-600  bg-primary-500 shadow':'bg-gray-400']"
                 class="flex items-center justify-center text-primary-50 h-10 w-10  md:h-14 md:w-14   rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
                 <path fill="currentColor"
@@ -90,13 +79,12 @@
 </template>
 <script lang="ts" setup>
 
-import {onBeforeUnmount, onMounted, Ref, ref} from "vue";
+import {onMounted, Ref, ref} from "vue";
 import {useAppStore} from "../../store/app-store";
-import {onSnapshot, serverTimestamp} from "firebase/firestore";
-import {Chats} from "../../model/chats";
 import {useRoute} from "vue-router";
 import {useCurrentUser} from "vuefire";
-import {useTimeAgo} from "@vueuse/core";
+import {ChatGPT} from "../../services/openai";
+import {ChatCompletionRequestMessageRoleEnum} from "openai";
 
 const appstore = useAppStore();
 const user = useCurrentUser();
@@ -107,61 +95,53 @@ const chat_scroller = ref(null);
 const is_at_bottom = ref(true);
 
 
+const is_typing = ref(false);
+
+
 const message_text = ref('');
 
-const messages = ref([]) as Ref<{
-  id: string,
-  from: string,
-  text: string,
-  date_created: { seconds: string },
+const messages = ref([
+  {
+    role: 'assistant',
+    content: 'Hi, i am an AI assistant from e-farming, how can i help you?'
+  }
+]) as Ref<{
+  role: ChatCompletionRequestMessageRoleEnum,
+  content: string,
 }[]>
 
 let unsub
 onMounted(() => {
-  handleChatScroller()
-  onScrollToBottom()
-  messagesSub();
+  handleChatScroller();
+  onScrollToBottom();
+  // messagesSub();
 })
-
-const addChatAdvisor = () => {
-  if (!route.query.advisor) {
-    if (appstore.profile_advisor && appstore.profile?.full_name) {
-      new Chats().ownChat(route.query.id as string, {
-        advisor: user.value?.uid ?? '',
-        advisor_name: appstore.profile.full_name
-      })
-    }
-  }
-}
 
 
 const onSendMessage = () => {
-  new Chats().setChatMessage(route.query.id as string, {
-    from: user.value?.uid ?? '',
-    text: message_text.value,
-    date_created: serverTimestamp(),
-  });
-  message_text.value = '';
-  addChatAdvisor();
+  if (message_text.value) {
+    const ls: { role: ChatCompletionRequestMessageRoleEnum, content: string }[] = [
+      ...messages.value,
+      {
+        role: 'user',
+        content: message_text.value
+      }
+    ];
 
-}
-
-const messagesSub = () => {
-  const mref = new Chats().getChatMessages(route.query.id as string);
-  unsub = onSnapshot(mref, (querySnapshot) => {
-    const ls = [];
-    querySnapshot.forEach((doc) => {
-      ls.push({...doc.data(), id: doc.id});
-    });
     messages.value = ls;
-    setTimeout(()=>onScrollToBottom(),900)
+    message_text.value = '';
 
-  });
+    is_typing.value = true;
+    new ChatGPT().prompt(ls).then((res) => {
+      messages.value.push(res.data.choices[0].message);
+      is_typing.value = false;
+
+      setTimeout(() => {
+        onScrollToBottom();
+      }, 500)
+    })
+  }
 }
-
-onBeforeUnmount(() => {
-  unsub()
-})
 
 
 const onScrollToBottom = () => {

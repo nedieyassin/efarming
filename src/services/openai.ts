@@ -12,7 +12,6 @@ export class ChatGPT {
     }
 
     prompt(prompts: {role: ChatCompletionRequestMessageRoleEnum, content: string}[] ) {
-
         return this.openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             temperature: 0.7,

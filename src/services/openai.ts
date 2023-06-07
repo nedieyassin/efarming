@@ -6,7 +6,7 @@ export class ChatGPT {
     constructor() {
         const configuration = new Configuration({
             organization: "org-T0ibHnYUo8jJW3td2j1En4iT",
-            apiKey: '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',
+            apiKey: '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',
         });
         this.openai = new OpenAIApi(configuration);
     }

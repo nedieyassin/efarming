@@ -3,15 +3,18 @@ import {ChatCompletionRequestMessageRoleEnum, Configuration, CreateChatCompletio
 export class ChatGPT {
     private openai
 
+    organization = ''
+    apiKey = ''
+
     constructor() {
         const configuration = new Configuration({
-            organization: "org-T0ibHnYUo8jJW3td2j1En4iT",
-            apiKey: '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',
+            organization: this.organization,
+            apiKey: this.apiKey
         });
         this.openai = new OpenAIApi(configuration);
     }
 
-    prompt(prompts: {role: ChatCompletionRequestMessageRoleEnum, content: string}[] ) {
+    prompt(prompts: { role: ChatCompletionRequestMessageRoleEnum, content: string }[]) {
         return this.openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             temperature: 0.7,

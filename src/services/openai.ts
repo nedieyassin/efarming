@@ -3,8 +3,8 @@ import {ChatCompletionRequestMessageRoleEnum, Configuration, CreateChatCompletio
 export class ChatGPT {
     private openai
 
-    organization = ''
-    apiKey = ''
+    organization = ''; // <- put organisation key here
+    apiKey = '' // <- put api key here
 
     constructor() {
         const configuration = new Configuration({

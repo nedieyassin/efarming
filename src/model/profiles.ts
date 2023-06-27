@@ -1,4 +1,4 @@
-import {collection, doc, setDoc, updateDoc, getDoc} from "firebase/firestore";
+import {collection, doc, setDoc, updateDoc, getDoc, serverTimestamp} from "firebase/firestore";
 import {db} from "../services/firebase";
 
 export class Profiles {
@@ -12,7 +12,11 @@ export class Profiles {
         return await setDoc(doc(this.profilesRef, id), {
             full_name: data.full_name,
             type: data.type,
-        });
+        }, {merge: true});
+    }
+
+    async setLoginDate(id: string) {
+        return await setDoc(doc(this.profilesRef, id), {login_date: serverTimestamp()}, {merge: true});
     }
 
     async getProfile(id: string) {

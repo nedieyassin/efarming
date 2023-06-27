@@ -6,6 +6,7 @@ import router from "./router";
 import {VueFire, VueFireAuth,VueFirestoreObject} from 'vuefire'
 import {firebaseApp} from './services/firebase'
 import pinia from "./store/pinia";
+import VueApexCharts from "vue3-apexcharts";
 
 const app = createApp(App);
 
@@ -20,5 +21,6 @@ app.use(VueFire, {
 
 app.use(router)
 app.use(pinia)
+app.use(VueApexCharts);
 
 app.mount('#app')

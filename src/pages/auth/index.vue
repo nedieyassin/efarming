@@ -69,6 +69,7 @@ import {useCurrentUser} from 'vuefire'
 import {useRouter} from "vue-router";
 import {useAppStore} from "../../store/app-store";
 import {Profiles} from "../../model/profiles";
+import {History} from "../../model/history";
 
 
 const auth = useFirebaseAuth();
@@ -101,7 +102,7 @@ const login = () => {
     is_loading.value = true;
     signInWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
         .then(async (userCredential) => {
-          await new Profiles().setLoginDate(userCredential.user.uid)
+          await new History().set(userCredential.user.uid);
           appstore.getProfile(userCredential.user.uid).then(() => {
             is_loading.value = false;
             router.push({path: '/app'});

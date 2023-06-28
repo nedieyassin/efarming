@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div id="chart">
+      <div id="chart" class="bg-white items-center shadow p-6 rounded-xl">
         <apexchart type="bar" height="500" :options="chartOptions" :series="series"></apexchart>
       </div>
 
@@ -58,6 +58,7 @@ import Chat from "../chat/chat.vue";
 import {onMounted, Ref, ref} from "vue";
 import {Users} from "../../model/users";
 import {Quickhelp} from "../../model/quickhelp";
+import {History} from "../../model/history";
 
 const bot_open = ref(false);
 const users_list = ref([]) as Ref<{
@@ -79,7 +80,7 @@ const series = ref([
   {
     name: 'Number of Active Farmers',
     // array of 12 random number
-    data:[13, 12, 32, 41, 15, 61, 17, 18, 19, 10, 11, 12]
+    data: [13, 12, 32, 41, 15, 61, 17, 18, 19, 10, 11, 12]
   }
 ])
 
@@ -120,7 +121,15 @@ const getList = () => {
   });
   new Quickhelp().getQuickHelps().then((res) => {
     quickhelp_list.value = res;
-  }).catch(() => {
+  })
+  new History().get().then((res) => {
+    series.value = [
+      {
+        name: 'Number of Active Farmers',
+        // array of 12 random number
+        data: res
+      }
+    ]
   })
 }
 

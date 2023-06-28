@@ -84,6 +84,7 @@ import {createUserWithEmailAndPassword} from "firebase/auth";
 import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {Profiles} from "../../model/profiles";
+import {History} from "../../model/history";
 
 
 const auth = useFirebaseAuth();
@@ -111,7 +112,7 @@ const register = () => {
     is_loading.value = true;
     createUserWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
         .then(async (userCredential) => {
-          await new Profiles().setLoginDate(userCredential.user.uid);
+          await new History().set(userCredential.user.uid);
           new Profiles().setProfile(userCredential.user.uid, {
             full_name: auth_form.full_name,
             type: 'farmer'

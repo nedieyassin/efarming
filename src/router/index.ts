@@ -12,12 +12,11 @@ import Users from '../pages/users/index.vue';
 import UsersList from '../pages/users/list.vue';
 // import UsersDetail from '../pages/users/detail.vue'
 
-import Chat from '../pages/chat/index.vue';
-import ChatList from '../pages/chat/list.vue';
-import ChatRoom from '../pages/chat/chat.vue';
+import Notification from '../pages/notification/index.vue';
+import NotificationList from '../pages/notification/list.vue';
+import NotificationRoom from '../pages/chat/chat.vue';
 
 import Profile from '../pages/profile/Profile.vue';
-
 
 
 import AuthPage from '../pages/auth/index.vue';
@@ -70,17 +69,17 @@ const routes: Array<RouteRecordRaw> = [
                 ]
             },
             {
-                path: 'chat',
-                component: Chat,
+                path: 'notifications',
+                component: Notification,
                 children: [
                     {
                         path: '',
-                        component: ChatList,
+                        component: NotificationList,
                     },
                     {
                         path: 'room',
                         meta: {no_nav: true},
-                        component: ChatRoom,
+                        component: NotificationRoom,
                     },
                 ]
             },
@@ -88,9 +87,14 @@ const routes: Array<RouteRecordRaw> = [
                 path: 'profile',
                 component: Profile,
             },
+            {
+                path: '/:pathMatch(.*)',
+                redirect: '/app/home',
+            },
+
 
         ]
-    }
+    },
 ];
 
 const router = createRouter({

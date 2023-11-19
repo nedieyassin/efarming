@@ -7,7 +7,7 @@
                 d="M21.998 7V9.5C21.998 13.0899 19.0879 16 15.498 16H12.998V21H10.998V14L11.0169 13.0007C11.2719 9.64413 14.0762 7 17.498 7H21.998ZM5.99805 3C9.0904 3 11.7144 5.00519 12.6408 7.78626C11.1417 9.06119 10.1516 10.9143 10.0144 13.0004L8.99805 13C5.13205 13 1.99805 9.86599 1.99805 6V3H5.99805Z"></path>
         </svg>
       </div>
-      <h1 class="text-4xl font-bold text-center">E-Farming</h1>
+      <h1 class="text-4xl font-bold text-center">i-farm</h1>
       <div class="py-6 md:w-96 w-full">
         <form @submit.prevent="login" class="flex flex-col gap-3 py-6">
           <div v-if="message" class="text-red-400">
@@ -15,7 +15,7 @@
           </div>
           <div>
             <label for="email">Email</label>
-            <input v-model="auth_form.email"
+            <input v-model="auth_form.email_address"
                    type="email"
                    id="email"
                    required
@@ -25,7 +25,7 @@
           <div>
             <label for="password">Password</label>
             <input v-model="auth_form.password"
-                   :type="[show_password ? 'text':'password']"
+                   :type="show_password ? 'text':'password'"
                    id="password"
                    required
                    placeholder="Enter password"
@@ -41,8 +41,8 @@
           </div>
           <div>
             <button type="submit"
-                    :disabled="is_loading || !auth_form.password ||!auth_form.email "
-                    :class="[!is_loading && auth_form.password && auth_form.email ?'bg-primary-500 hover:bg-primary-600 shadow':'bg-gray-400']"
+                    :disabled="is_loading || !auth_form.password ||!auth_form.email_address "
+                    :class="[!is_loading && auth_form.password && auth_form.email_address ?'bg-primary-500 hover:bg-primary-600 shadow':'bg-gray-400']"
                     class="flex justify-center w-full text-center gap-4 py-3 px-5 transition-all   rounded-md  text-white">
               <span v-if="!is_loading">Login</span>
               <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 animate-spin" viewBox="0 0 24 24">
@@ -62,18 +62,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {useFirebaseAuth} from "vuefire";
-import {signInWithEmailAndPassword} from "firebase/auth";
 import {onMounted, reactive, ref} from "vue";
-import {useCurrentUser} from 'vuefire'
 import {useRouter} from "vue-router";
 import {useAppStore} from "../../store/app-store";
-import {Profiles} from "../../model/profiles";
-import {History} from "../../model/history";
 
 
-const auth = useFirebaseAuth();
-const user = useCurrentUser();
 const router = useRouter();
 const appstore = useAppStore();
 
@@ -83,37 +76,39 @@ const message = ref('');
 const show_password = ref(false);
 //
 const auth_form = reactive({
-  email: '',
+  email_address: '',
   password: ''
 })
 
-onMounted(() => {
-  if (user.value?.email != null) {
-    if ("email" in user.value) {
-      auth_form.email = user.value.email
-    }
-  }
-})
 
 const login = () => {
   // router.push({path: '/app'});
   // return;
   if (!is_loading.value) {
     is_loading.value = true;
-    signInWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
-        .then(async (userCredential) => {
-          await new History().set(userCredential.user.uid);
-          appstore.getProfile(userCredential.user.uid).then(() => {
-            is_loading.value = false;
-            router.push({path: '/app'});
-          })
+    appstore.login(auth_form).then(() => {
+      is_loading.value = false;
+      router.push({path: '/app'});
+    }).catch((e) => {
+      message.value = e.message;
+      setTimeout(() => message.value = '', 5000)
+      is_loading.value = false;
+    })
 
-        })
-        .catch((error) => {
-          message.value = error.message;
-          setTimeout(() => message.value = '', 5000)
-          is_loading.value = false;
-        });
+    // signInWithEmailAndPassword(auth!, auth_form.email, auth_form.password)
+    //     .then(async (userCredential) => {
+    //       await new History().set(userCredential.user.uid);
+    //       appstore.getProfile(userCredential.user.uid).then(() => {
+    //         is_loading.value = false;
+    //         router.push({path: '/app'});
+    //       })
+    //
+    //     })
+    //     .catch((error) => {
+    //       message.value = error.message;
+    //       setTimeout(() => message.value = '', 5000)
+    //       is_loading.value = false;
+    //     });
   }
 }
 </script>

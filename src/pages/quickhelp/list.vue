@@ -65,14 +65,14 @@
           <div
               v-if="item.type  === type"
               class="shadow p-3 cursor-pointer hover:bg-primary-100 hover:ring-1 ring-primary-400 transition-all rounded-2xl bg-white">
-            <div class="flex">
-              <router-link :to="`/app/quick-help/detail?quickhelp=${item.id}`" class="flex-1">
+            <div class="flex relative">
+              <router-link :to="`/app/quick-help/detail?quickhelp=${item.uid}`" class="flex-1">
                 <h1 class="text-3xl font-bold p-1">{{ item.title }}</h1>
               </router-link>
-              <div class="flex gap-2" v-if="appstore.profile?.type === 'admin'">
+              <div class=" absolute flex gap-2 right-1" v-if="appstore.profile?.type === 'admin'">
                 <router-link
                     class="flex items-center justify-center h-12 w-12 rounded-full bg-primary-500 hover:bg-primary-600  shadow text-white"
-                    :to="`/app/quick-help/add?quickhelp=${item.id}`">
+                    :to="`/app/quick-help/add?quickhelp=${item.uid}`">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
                     <path fill="currentColor"
                           d="M16.7574 2.99666L9.29145 10.4626L9.29886 14.7097L13.537 14.7023L21 7.2393V19.9967C21 20.5489 20.5523 20.9967 20 20.9967H4C3.44772 20.9967 3 20.5489 3 19.9967V3.99666C3 3.44438 3.44772 2.99666 4 2.99666H16.7574ZM20.4853 2.09717L21.8995 3.51138L12.7071 12.7038L11.2954 12.7062L11.2929 11.2896L20.4853 2.09717Z"></path>
@@ -80,7 +80,7 @@
                 </router-link>
 
                 <button
-                    @click="onDelete(item.id)"
+                    @click="onDelete(item.uid)"
                     class="flex items-center justify-center h-12 w-12 rounded-full bg-red-500 hover:bg-red-600  shadow text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
                     <path
@@ -90,7 +90,7 @@
                 </button>
               </div>
             </div>
-            <router-link :to="`/app/quick-help/detail?quickhelp=${item.id}`" class="line-clamp-3"
+            <router-link :to="`/app/quick-help/detail?quickhelp=${item.uid}`" class="line-clamp-3"
                          v-html="item.body"></router-link>
             <div class="flex items-center gap-3 pt-2">
               <div class="flex items-center">
@@ -108,7 +108,7 @@
                 </button>
               </div>
               <div class="text-xs">
-                {{ useTimeAgo(new Date((item.date_updated.seconds * 1000))).value }}
+                {{ useTimeAgo(new Date(item?.date_updated ?? '')).value }}
               </div>
             </div>
           </div>
@@ -123,63 +123,32 @@
 
       </div>
     </div>
-
-
-    <div :class="[bot_open ? '':'animate-bounce']"
-         class="fixed flex flex-col  gap-3 justify-end items-end right-4 md:right-8 md:bottom-8 bottom-28">
-      <div>
-        <div v-if="bot_open">
-          <Chat/>
-        </div>
-        <div v-else class="px-6 py-3 rounded-md shadow-2xl bg-white border">
-          Ask <b class="text-primary-700">e-farming AI Assistance</b>
-        </div>
-
-      </div>
-      <div>
-        <button
-            @click="bot_open = !bot_open"
-            class=" text-white hover:bg-primary-600  bg-primary-500  transition-all  justify-self-center flex p-3 md:p-4 shadow-xl rounded-full border">
-          <svg v-if="!bot_open" xmlns="http://www.w3.org/2000/svg" class="h-6 md:h-10" viewBox="0 0 24 24">
-            <path
-                fill="currentColor"
-                d="M8 18H18.2372L20 19.3851V9H21C21.5523 9 22 9.44772 22 10V23.5L17.5455 20H9C8.44772 20 8 19.5523 8 19V18ZM5.45455 16L1 19.5V4C1 3.44772 1.44772 3 2 3H17C17.5523 3 18 3.44772 18 4V16H5.45455Z"></path>
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 md:h-10" viewBox="0 0 24 24">
-            <path
-                fill="currentColor"
-                d="M12.0007 10.5865L16.9504 5.63672L18.3646 7.05093L13.4149 12.0007L18.3646 16.9504L16.9504 18.3646L12.0007 13.4149L7.05093 18.3646L5.63672 16.9504L10.5865 12.0007L5.63672 7.05093L7.05093 5.63672L12.0007 10.5865Z"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
+    <Chatbot/>
   </div>
 </template>
 <script lang="ts" setup>
 import {v4 as uuidv4} from 'uuid';
-import {Quickhelp} from "../../model/quickhelp";
+// import {Quickhelp} from "../../model/quickhelp";
 import {onMounted, Ref, ref} from "vue";
 import {useTimeAgo} from '@vueuse/core'
 import {useAppStore} from "../../store/app-store";
 import {alertDialog} from "../../components/dialog";
-import Chat from "../chat/chat.vue";
+import Chatbot from "../chat/Chatbot.vue";
+import {IQuickhelp} from "../../types/auth";
+import {Quickhelp} from "../../services/api/endpoints/quickhelp";
 
 const id = uuidv4();
 
 const appstore = useAppStore()
+const _quickhelp = new Quickhelp();
 
-const list = ref([]) as Ref<{
-  id: string,
-  type: string,
-  body: string,
-  title: string,
-  date_updated: { seconds: string }
-}[]>;
+const list = ref([]) as Ref<IQuickhelp[]>;
 
 const is_loading = ref(false);
 const bot_open = ref(false);
 const search_text = ref('');
 const type = ref('crop');
+
 
 onMounted(() => {
   getList();
@@ -187,13 +156,11 @@ onMounted(() => {
 
 const getList = () => {
   is_loading.value = true;
-  new Quickhelp().getQuickHelps().then((res) => {
-    list.value = res;
+  _quickhelp.getList().then((res) => {
+    list.value = res.body;
     is_loading.value = false;
-    // console.log(res);
   }).catch(() => {
     is_loading.value = false;
-
   })
 }
 const onDelete = (id: string) => {
@@ -203,7 +170,7 @@ const onDelete = (id: string) => {
     action: 'Confirm and Delete'
   }).then((res) => {
     if (res) {
-      new Quickhelp().deleteQuickHelp(id).then(() => {
+      _quickhelp.delete(id).then(() => {
         getList();
       })
     }

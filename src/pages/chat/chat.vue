@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col h-[70vh] w-100 bg-white overflow-clip rounded-3xl shadow-2xl">
+  <div class="flex flex-col h-[70vh] w-full  md:w-100 bg-white overflow-clip md:rounded-3xl shadow-2xl">
     <div class="flex p-4 gap-3 items-center border-b">
       <div>
-        <h1 class="text-xl font-bold line-clamp-1">E-FARMING AI ASSISTANT</h1>
+        <h1 class="text-xl font-bold line-clamp-1">I-FARM CHATBOT</h1>
       </div>
     </div>
     <div class="relative flex flex-col flex-1 h-full">
@@ -17,23 +17,24 @@
               </div>
             </div>
           </div>
-          <div v-else-if="message.role === 'assistant'">
+          <div v-else-if="message.role === 'chatbot'">
             <div class="flex flex-col items-start">
               <div class="px-3 font-bold text-primary-700">
-                AI ASSISTANT
+                CHATBOT
               </div>
               <div class="bg-primary-700  text-white p-4 max-w-[90%] md:max-w-[80%] rounded-2xl">
                 {{ message.content }}
               </div>
-
             </div>
           </div>
+
+
         </template>
 
         <div v-if="is_typing">
           <div class="flex flex-col items-start">
             <div class="px-3 font-bold text-primary-700">
-              AI ASSISTANT
+              CHATBOT
             </div>
             <div class="bg-primary-700  text-white p-4 max-w-[90%] md:max-w-[80%] rounded-2xl">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-7 animate-spin" viewBox="0 0 24 24">
@@ -46,32 +47,28 @@
           </div>
         </div>
 
+        <div class="py-3 px-3 space-y-2">
+          <div class="font-bold text-primary-700 ">
+            Choose an option
+          </div>
+          <button v-for="option in options" :key="option.id"
+                  class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
+            {{ option.content }}
+          </button>
+        </div>
+
 
         <div ref="scroll_ghost"></div>
       </div>
       <div class="absolute bottom-0 w-full">
-        <div class="relative pt-4 justify-center flex gap-3 md:gap-4 bg-primary-50 p-3">
+        <div class="relative pt-4 justify-center flex gap-3 md:gap-4 p-3">
           <button @click="onScrollToBottom" v-if="!is_at_bottom"
-                  class="absolute hover:bg-gray-200 transition-all -top-16 justify-self-center flex p-2 bg-white shadow-xl rounded-full border">
+                  class="absolute hover:bg-gray-200 transition-all -top-10 justify-self-center flex p-2 bg-white shadow-xl rounded-full border">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
               <path
                   d="M12.9999 16.1716L18.3638 10.8076L19.778 12.2218L11.9999 20L4.22168 12.2218L5.63589 10.8076L10.9999 16.1716V4H12.9999V16.1716Z"></path>
             </svg>
           </button>
-          <textarea v-model="message_text" placeholder="Ask Assistant solutions to your problems"
-                    class="p-2 px-4 rounded-xl md:rounded-[1.2em] max-h-96 outline-none ring-1 focus:ring-2 w-full ring-primary-400 placeholder-gray-300"></textarea>
-          <div>
-            <button
-                @click="onSendMessage"
-                :disabled="!message_text"
-                :class="[message_text ?'hover:bg-primary-600  bg-primary-500 shadow':'bg-gray-400']"
-                class="flex items-center justify-center text-primary-50 h-10 w-10  md:h-14 md:w-14   rounded-full">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
-                <path fill="currentColor"
-                      d="M3 13.0001H9V11.0001H3V1.8457C3 1.56956 3.22386 1.3457 3.5 1.3457C3.58425 1.3457 3.66714 1.36699 3.74096 1.4076L22.2034 11.562C22.4454 11.695 22.5337 11.9991 22.4006 12.241C22.3549 12.3241 22.2865 12.3925 22.2034 12.4382L3.74096 22.5925C3.499 22.7256 3.19497 22.6374 3.06189 22.3954C3.02129 22.3216 3 22.2387 3 22.1544V13.0001Z"></path>
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -80,15 +77,7 @@
 <script lang="ts" setup>
 
 import {onMounted, Ref, ref} from "vue";
-import {useAppStore} from "../../store/app-store";
-import {useRoute} from "vue-router";
-import {useCurrentUser} from "vuefire";
-import {ChatGPT} from "../../services/openai";
-import {ChatCompletionRequestMessageRoleEnum} from "openai";
 
-const appstore = useAppStore();
-const user = useCurrentUser();
-const route = useRoute();
 
 const scroll_ghost = ref(null);
 const chat_scroller = ref(null);
@@ -96,19 +85,35 @@ const is_at_bottom = ref(true);
 
 
 const is_typing = ref(false);
-
-
-const message_text = ref('');
-
 const messages = ref([
   {
-    role: 'assistant',
-    content: 'Hi, i am an AI assistant from e-farming, how can i help you?'
-  }
-]) as Ref<{
-  role: ChatCompletionRequestMessageRoleEnum,
-  content: string,
-}[]>
+    role: 'chatbot',
+    content: 'Hi, I am an I-Farm chatbot, how can i help you?'
+  },
+  {
+    role: 'user',
+    content: 'I want to know about animal production.'
+  },
+  {
+    role: 'chatbot',
+    content: 'Which animal are you interested in?'
+  },
+])
+
+const options = ref([
+  {
+    id: 'chickens',
+    content: 'Chickens'
+  },
+  {
+    id: 'cattles',
+    content: 'Cattles'
+  },
+  {
+    id: 'goats',
+    content: 'Goats'
+  },
+])
 
 let unsub
 onMounted(() => {
@@ -116,32 +121,6 @@ onMounted(() => {
   onScrollToBottom();
   // messagesSub();
 })
-
-
-const onSendMessage = () => {
-  if (message_text.value) {
-    const ls: { role: ChatCompletionRequestMessageRoleEnum, content: string }[] = [
-      ...messages.value,
-      {
-        role: 'user',
-        content: message_text.value
-      }
-    ];
-
-    messages.value = ls;
-    message_text.value = '';
-
-    is_typing.value = true;
-    new ChatGPT().prompt(ls).then((res) => {
-      messages.value.push(res.data.choices[0].message);
-      is_typing.value = false;
-
-      setTimeout(() => {
-        onScrollToBottom();
-      }, 500)
-    })
-  }
-}
 
 
 const onScrollToBottom = () => {

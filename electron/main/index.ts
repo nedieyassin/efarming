@@ -49,7 +49,7 @@ const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
     win = new BrowserWindow({
-        title: 'efarming',
+        title: 'i-farm',
         icon: join(process.env.PUBLIC, 'favicon.ico'),
         webPreferences: {
             preload,
@@ -115,7 +115,7 @@ app.on('activate', () => {
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {
     const childWindow = new BrowserWindow({
-        title: 'Notee',
+        title: 'i-farm',
         webPreferences: {
             preload,
             nodeIntegration: true,

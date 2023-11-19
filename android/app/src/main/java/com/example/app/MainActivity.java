@@ -1,4 +1,4 @@
-package com.esinta.efarming;
+package com.example.app;
 
 import com.getcapacitor.BridgeActivity;
 

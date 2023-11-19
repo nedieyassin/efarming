@@ -35,8 +35,8 @@
               </div>
               <div class="flex gap-2">
                 <button
-                    @click="onEdit(item.id)"
-                    v-if="item.id !== user?.uid"
+                    @click="onEdit(item.user_id)"
+                    v-if="item.user_id !== user?.user_id"
                     class="flex items-center justify-center h-12 w-12 rounded-full bg-primary-500 hover:bg-primary-600  shadow text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
                     <path fill="currentColor"
@@ -45,8 +45,8 @@
                 </button>
 
                 <button
-                    @click="onDelete(item.id)"
-                    v-if="item.id !== user?.uid"
+                    @click="onDelete(item.user_id)"
+                    v-if="item.user_id !== user?.user_id"
                     class="flex items-center justify-center h-12 w-12 rounded-full bg-red-500 hover:bg-red-600  shadow text-white">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6" viewBox="0 0 24 24">
                     <path
@@ -72,20 +72,20 @@
 </template>
 <script lang="ts" setup>
 import {v4 as uuidv4} from 'uuid';
-import {Quickhelp} from "../../model/quickhelp";
 import {onMounted, Ref, ref} from "vue";
 import {useAppStore} from "../../store/app-store";
 import {alertDialog, optionsDialog} from "../../components/dialog";
-import {Users} from "../../model/users";
-import {useCurrentUser} from "vuefire";
+import {Users} from "../../services/api/endpoints/users";
 
 const id = uuidv4();
 
 const appstore = useAppStore();
-const user = useCurrentUser();
+const user = appstore.profile;
+const _users = new Users();
+
 
 const list = ref([]) as Ref<{
-  id: string,
+  user_id: string,
   full_name: string,
   type: string,
 }[]>;
@@ -99,8 +99,8 @@ onMounted(() => {
 
 const getList = () => {
   is_loading.value = true;
-  new Users().getUsers().then((res) => {
-    list.value = res;
+  _users.get().then((res) => {
+    list.value = res.body;
     is_loading.value = false;
     // console.log(res);
   }).catch(() => {
@@ -118,7 +118,11 @@ const onEdit = (id: string) => {
     ]
   }).then((res) => {
     if (res) {
-      new Users().updateUser(id, {type: (res as string).toLowerCase()}).then(() => {
+      // new Users().updateUser(id, {type: (res as string).toLowerCase()}).then(() => {
+      //   getList();
+      // })
+
+      _users.changeRole(id, (res as string).toLowerCase()).then(() => {
         getList();
       })
     }
@@ -130,11 +134,9 @@ const onDelete = (id: string) => {
     message: 'This action will delete this user permanently, continue?',
     action: 'Confirm and Delete'
   }).then((res) => {
-    // if (res) {
-    //   new Users().deleteUser(id).then(() => {
-    //     getList();
-    //   })
-    // }
+    _users.delete(id).then(() => {
+      getList();
+    })
   })
 }
 

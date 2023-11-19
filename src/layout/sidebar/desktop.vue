@@ -33,6 +33,29 @@
                             Quick Help
                         </span>
       </router-link>
+      <router-link to="/app/notifications"
+                   v-slot="{isActive}"
+                   class="group flex cursor-pointer flex-col items-center justify-center">
+        <div :class="[isActive ? 'bg-primary-200':'group-hover:bg-gray-200']"
+             class=" transition-all  rounded-full w-16 flex justify-center items-center p-1.5">
+          <!--          <svg xmlns="http://www.w3.org/2000/svg" :class="[isActive ? 'text-primary-800':'']" class="h-6"-->
+          <!--               viewBox="0 0 24 24">-->
+          <!--            <path-->
+          <!--                d="M12 2C16.9706 2 21 6.04348 21 11.0314V20H3V11.0314C3 6.04348 7.02944 2 12 2ZM9.5 21H14.5C14.5 22.3807 13.3807 23.5 12 23.5C10.6193 23.5 9.5 22.3807 9.5 21Z"></path>-->
+          <!--          </svg>-->
+
+          <svg xmlns="http://www.w3.org/2000/svg" :class="[isActive ? 'text-primary-800':'']" class="h-6"
+               viewBox="0 0 24 24">
+            <path
+                fill="currentColor"
+                d="M7.29117 20.8242L2 22L3.17581 16.7088C2.42544 15.3056 2 13.7025 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C10.2975 22 8.6944 21.5746 7.29117 20.8242Z"></path>
+          </svg>
+
+        </div>
+        <span class="text-sm text-center">
+                            Messenger
+                        </span>
+      </router-link>
 
       <!--                    -->
       <router-link v-if="appstore.profile_admin" to="/app/users"

@@ -113,7 +113,6 @@ const cloudSync = reactive({
 const quickhelp = reactive({
   title: '',
   type: 'crop',
-  date_updated: serverTimestamp(),
 })
 watch(() => quickhelp.title, (o, n) => {
   if (o !== n) {

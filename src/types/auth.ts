@@ -19,3 +19,26 @@ export interface IQuickhelp {
     body: string,
     date_updated: string,
 }
+
+
+export interface IChat {
+    id: string,
+    uid: string,
+    type: string,
+    title: string,
+    farmer_name: string,
+    advisor_name: string,
+    date_created: string,
+    farmer_id: string,
+    advisor_id: string,
+}
+
+
+export interface IMessage {
+    id: string,
+    chat_id: string,
+    user_id: string,
+    user_name: string,
+    body: string,
+    date_created: string,
+}

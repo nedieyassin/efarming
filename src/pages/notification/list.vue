@@ -7,6 +7,8 @@
       </div>
       <div>
         <button
+            v-if="appstore.profile_farmer"
+            @click="onStartChat"
             class="bg-primary-500 text-white rounded-full px-6 py-1.5 font-bold hover:bg-primary-600 transition-colors">
           Ask a question
         </button>
@@ -16,7 +18,7 @@
       <div class="absolute flex w-full h-full overflow-y-auto flex-col gap-4 ">
         <router-link
             v-for="item in list"
-            :to="{path:'/app/notifications/ss'}"
+            :to="{path: (!appstore.profile_advisor || item.advisor_name) ? '/app/notifications/room' : '',query: {chat: item.uid}}"
             class="px-2 py-1 rounded-xl cursor-pointer hover:underline transition-all flex">
           <div>
             <div class="flex text-primary-700 h-10 w-10 rounded-full justify-center items-center bg-primary-200">
@@ -33,15 +35,25 @@
           <div class="w-full px-2">
             <h1 class="font-bold text-lg line-clamp-1">{{ item.title }}</h1>
             <div class="flex justify-between items-center">
-              <div class="text-xs">
-                answered by {{ item.advisor_name }}
+              <div v-if="item.advisor_name" class="text-xs">
+                Answered by <b>{{ item.advisor_name }}</b>, asked by <b>{{ item.farmer_name }}</b>
+              </div>
+              <div v-else class="text-xs">
+                Asked by <b>{{ item.farmer_name }}</b> not yet answered
               </div>
               <div>
                 <div class="text-xs">
-                  2 days ago
+                  {{ useTimeAgo(new Date(item?.date_created ?? '')).value }}
                 </div>
               </div>
             </div>
+          </div>
+          <div v-if="!item.advisor_name && appstore.profile_advisor">
+            <button
+                @click="takeQuery(item.id, item.uid)"
+                class="bg-primary-600 text-white px-2 py-1 rounded-md shadow hover:bg-primary-700">
+              Respond
+            </button>
           </div>
         </router-link>
         <div class="text-center py-16 text-gray-400" v-if="!is_loading && !list.length">
@@ -75,94 +87,81 @@ import {addChatDialog} from "../../components/dialog";
 import {onMounted, Ref, ref} from "vue";
 import {v4 as uuidv4} from "uuid";
 import {useAppStore} from "../../store/app-store";
+import {IChat} from "../../types/auth";
+import {Chats} from "../../services/api/endpoints/chat";
+import {useRouter} from "vue-router";
+import {useTimeAgo} from "@vueuse/core";
 
 
 const appstore = useAppStore();
 const user = appstore.profile;
+const _chats = new Chats()
+const router = useRouter();
 
-const list = ref([
-  {
-    id: '',
-    type: 'crop',
-    title: 'Agriculture advisor answered your question about your maize',
-    farmer_name: '',
-    advisor_name: 'Alex Phiri',
-    date_created: '2 days ago'
-  }
-]) as Ref<{
-  id: string,
-  type: string,
-  title: string,
-  farmer_name: string,
-  advisor_name: string,
-  date_created: string
-}[]>;
+const list = ref([]) as Ref<IChat[]>;
 
-const type = ref('old');
+// const type = ref('old');
 
 const is_loading = ref(false);
-const search_text = ref('');
+// const search_text = ref('');
 
 onMounted(() => {
   getList();
 });
 
 const getList = () => {
-  if (appstore.profile_farmer) {
+  if (appstore.profile_advisor) {
     is_loading.value = true;
-    // new Chats().getChats(user.value?.uid ?? "").then((res) => {
-    //   list.value = res;
-    //   is_loading.value = false;
-    //   // console.log(res);
-    // }).catch((err) => {
-    //   is_loading.value = false;
-    //   console.log(err);
-    // })
-  } else if (appstore.profile_farmer) {
-    advGetList();
-  }
-}
-
-
-const advGetList = () => {
-  if (type.value === 'old') {
-    is_loading.value = true;
-    // new Chats().getAdvChats(user.value?.uid ?? "").then((res) => {
-    //   list.value = res;
-    //   is_loading.value = false;
-    //   // console.log(res);
-    // }).catch((err) => {
-    //   is_loading.value = false;
-    //   console.log(err);
-    //
-    // })
+    _chats.getAdvisorChats(user?.user_id ?? '').then((res) => {
+      list.value = res.body;
+      is_loading.value = false;
+    }).catch(() => {
+      is_loading.value = false;
+    })
   } else {
     is_loading.value = true;
-    // new Chats().getNewChats().then((res) => {
-    //   list.value = res;
-    //   is_loading.value = false;
-    //   // console.log(res);
-    // }).catch((err) => {
-    //   is_loading.value = false;
-    //   console.log(err);
-    // })
+    _chats.getPersonChats(user?.user_id ?? '').then((res) => {
+      list.value = res.body;
+      is_loading.value = false;
+    }).catch(() => {
+      is_loading.value = false;
+    })
   }
+
 }
 
+const takeQuery = (id: string, uid: string) => {
+  is_loading.value = true;
+  _chats.advisorTakeQuery(id, {advisor_id: user?.user_id ?? '', advisor_name: appstore.profile?.full_name ?? ''}).then(() => {
+    getList();
+    router.push({path: '/app/notifications/room', query: {chat: uid}})
+  }).catch(() => {
+    is_loading.value = false;
+  })
+}
+
+
 const onStartChat = () => {
-  addChatDialog({}).then((res) => {
+  addChatDialog({}).then((res: { title: string, type: string }) => {
     if (res && appstore.profile?.full_name && user?.user_id) {
+
+      // console.log(res);
+      // return;
       const id = uuidv4();
-      // new Chats().setChat(id, {
-      //   user_id: user.value?.uid ?? "",
-      //   advisor: '',
-      //   title: res['title'],
-      //   type: res['type'],
-      //   date_created: serverTimestamp(),
-      //   farmer_name: appstore.profile?.full_name as string
-      // }).then(() => {
-      //   getList();
-      // })
+      is_loading.value = true;
+      _chats.add({
+        uid: id,
+        type: res.type,
+        title: res.title,
+        farmer_id: user?.user_id,
+        farmer_name: appstore.profile?.full_name,
+      }).then(() => {
+        is_loading.value = false;
+        getList();
+        router.push({path: '/app/notifications/room', query: {chat: id}})
+      }).catch(() => {
+        is_loading.value = false;
+      })
     }
 
   })

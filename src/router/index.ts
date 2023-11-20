@@ -14,7 +14,7 @@ import UsersList from '../pages/users/list.vue';
 
 import Notification from '../pages/notification/index.vue';
 import NotificationList from '../pages/notification/list.vue';
-import NotificationRoom from '../pages/chat/chat.vue';
+import NotificationRoom from '../pages/notification/chat.vue';
 
 import Profile from '../pages/profile/Profile.vue';
 

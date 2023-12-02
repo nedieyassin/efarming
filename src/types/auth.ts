@@ -42,3 +42,12 @@ export interface IMessage {
     body: string,
     date_created: string,
 }
+
+
+export interface IBotStep {
+    id: number,
+    parent_id: number,
+    message: string,
+    response: string,
+
+}

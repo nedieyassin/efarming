@@ -1,3 +1,73 @@
+<script lang="ts" setup>
+
+import {onMounted, Ref, ref} from "vue";
+import {Bot} from "../../services/api/endpoints/bot";
+
+
+const scroll_ghost = ref(null);
+const chat_scroller = ref(null);
+const is_at_bottom = ref(true);
+const _bot = new Bot();
+
+const is_typing = ref(false);
+const messages = ref<Record<string, any>[]>([])
+const options = ref<Record<string, any>[]>([]);
+
+
+const getParents = () => {
+  options.value = [];
+  messages.value = [{
+    role: 'chatbot',
+    content: 'Hi, I am an I-Farm chatbot, how can i help you?'
+  }];
+  _bot.getParents().then((res) => {
+    options.value = res.body;
+  })
+}
+
+const selectOption = (option: Record<string, any>) => {
+
+  messages.value.push({
+    role: 'user',
+    content: option.message
+  })
+
+  messages.value.push({
+    role: 'chatbot',
+    content: option.response
+  })
+
+
+  _bot.getChildren(option.id).then((res) => {
+    options.value = res.body ? res.body : [];
+  })
+}
+
+
+onMounted(() => {
+  handleChatScroller();
+  onScrollToBottom();
+  getParents();
+})
+
+
+const onScrollToBottom = () => {
+  if (scroll_ghost.value) {
+    (scroll_ghost.value as HTMLDivElement).scrollIntoView({behavior: "smooth"})
+  }
+}
+
+const handleChatScroller = () => {
+  if (chat_scroller.value) {
+    (chat_scroller.value as HTMLDivElement).addEventListener('scroll', (e) => {
+      const element = (e.target as HTMLDivElement);
+      is_at_bottom.value = (element.scrollHeight - element.scrollTop - element.clientHeight) < 20;
+    })
+  }
+}
+
+
+</script>
 <template>
   <div class="flex flex-col h-[70vh] w-full  md:w-100 bg-white overflow-clip md:rounded-3xl shadow-2xl">
     <div class="flex p-4 gap-3 items-center border-b">
@@ -51,10 +121,28 @@
           <div class="font-bold text-primary-700 ">
             Choose an option
           </div>
-          <button v-for="option in options" :key="option.id"
+          <button v-for="option in options" :key="option.id" @click="selectOption(option)"
                   class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
-            {{ option.content }}
+            {{ option.message }}
           </button>
+
+          <div v-if="options.length === 0" class="space-y-2">
+            <div>
+              Sorry, this is all i help you with this right now.
+            </div>
+            <div class="flex flex-col gap-3">
+              <router-link to="/app/notifications"
+                  class="bg-primary-200 text-center w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
+                <b>Contact Agriculture Advisor for more help</b>
+              </router-link>
+              <button
+                  @click="getParents"
+                  class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
+                <b>Start another session</b>
+              </button>
+            </div>
+          </div>
+
         </div>
 
 
@@ -74,69 +162,3 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
-
-import {onMounted, Ref, ref} from "vue";
-
-
-const scroll_ghost = ref(null);
-const chat_scroller = ref(null);
-const is_at_bottom = ref(true);
-
-
-const is_typing = ref(false);
-const messages = ref([
-  {
-    role: 'chatbot',
-    content: 'Hi, I am an I-Farm chatbot, how can i help you?'
-  },
-  {
-    role: 'user',
-    content: 'I want to know about animal production.'
-  },
-  {
-    role: 'chatbot',
-    content: 'Which animal are you interested in?'
-  },
-])
-
-const options = ref([
-  {
-    id: 'chickens',
-    content: 'Chickens'
-  },
-  {
-    id: 'cattles',
-    content: 'Cattles'
-  },
-  {
-    id: 'goats',
-    content: 'Goats'
-  },
-])
-
-let unsub
-onMounted(() => {
-  handleChatScroller();
-  onScrollToBottom();
-  // messagesSub();
-})
-
-
-const onScrollToBottom = () => {
-  if (scroll_ghost.value) {
-    (scroll_ghost.value as HTMLDivElement).scrollIntoView({behavior: "smooth"})
-  }
-}
-
-const handleChatScroller = () => {
-  if (chat_scroller.value) {
-    (chat_scroller.value as HTMLDivElement).addEventListener('scroll', (e) => {
-      const element = (e.target as HTMLDivElement);
-      is_at_bottom.value = (element.scrollHeight - element.scrollTop - element.clientHeight) < 20;
-    })
-  }
-}
-
-
-</script>

@@ -15,6 +15,7 @@ const options = ref<Record<string, any>[]>([]);
 
 
 const getParents = () => {
+  is_typing.value = true;
   options.value = [];
   messages.value = [{
     role: 'chatbot',
@@ -22,11 +23,15 @@ const getParents = () => {
   }];
   _bot.getParents().then((res) => {
     options.value = res.body;
+    is_typing.value = false;
+  }).catch(() => {
+    is_typing.value = false;
   })
 }
 
 const selectOption = (option: Record<string, any>) => {
 
+  is_typing.value = true;
   messages.value.push({
     role: 'user',
     content: option.message
@@ -40,7 +45,12 @@ const selectOption = (option: Record<string, any>) => {
 
   _bot.getChildren(option.id).then((res) => {
     options.value = res.body ? res.body : [];
+    is_typing.value = false;
+  }).catch(() => {
+    is_typing.value = false;
   })
+
+
 }
 
 
@@ -121,25 +131,26 @@ const handleChatScroller = () => {
           <div class="font-bold text-primary-700 ">
             Choose an option
           </div>
-          <button v-for="option in options" :key="option.id" @click="selectOption(option)"
-                  class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
-            {{ option.message }}
-          </button>
-
-          <div v-if="options.length === 0" class="space-y-2">
-            <div>
-              Sorry, this is all i help you with this right now.
-            </div>
-            <div class="flex flex-col gap-3">
-              <router-link to="/app/notifications"
-                  class="bg-primary-200 text-center w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
-                <b>Contact Agriculture Advisor for more help</b>
-              </router-link>
-              <button
-                  @click="getParents"
-                  class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
-                <b>Start another session</b>
-              </button>
+          <div v-if="!is_typing" class="space-y-2">
+            <button v-for="option in options" :key="option.id" @click="selectOption(option)"
+                    class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
+              {{ option.message }}
+            </button>
+            <div v-if="options.length === 0" class="space-y-2">
+              <div>
+                Sorry, this is all i help you with this right now.
+              </div>
+              <div class="flex flex-col gap-3">
+                <router-link to="/app/notifications"
+                             class="bg-primary-200 text-center w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
+                  <b>Contact Agriculture Advisor for more help</b>
+                </router-link>
+                <button
+                    @click="getParents"
+                    class="bg-primary-200 w-full text-primary-700 p-3 rounded-md border hover:bg-primary-300 transition-colors border-primary-700">
+                  <b>Start another session</b>
+                </button>
+              </div>
             </div>
           </div>
 

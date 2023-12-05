@@ -7,12 +7,12 @@
           <div class="bg-white items-center shadow p-6 rounded-xl flex gap-6">
             <h1 class="text-2xl">Farmers helped this month</h1>
             <h1 class="text-2xl font-bold text-primary-700 bg-primary-200 aspect-square w-14 flex justify-center items-center rounded-full">
-              {{ users_list.length }}</h1>
+              {{ reduce(_stats?.stats ?? []) }}</h1>
           </div>
           <div class="bg-white items-center shadow p-6 rounded-xl flex gap-6">
             <h1 class="text-2xl">Number of quickhelps</h1>
             <h1 class="text-2xl font-bold text-primary-700 bg-primary-200 aspect-square w-14 flex justify-center items-center rounded-full">
-              {{ quickhelp_list.length }}</h1>
+              {{ _stats?.quick_helps }}</h1>
           </div>
         </div>
       </div>
@@ -22,15 +22,13 @@
       </div>
 
     </div>
-    <Chatbot />
+    <Chatbot/>
   </div>
 </template>
 <script lang="ts" setup>
 import {onMounted, Ref, ref} from "vue";
-// import {Users} from "../../model/users";
-// import {Quickhelp} from "../../model/quickhelp";
-// import {History} from "../../model/history";
 import Chatbot from "../chat/Chatbot.vue";
+import {Auth} from "../../services/api/endpoints/auth";
 
 const users_list = ref([]) as Ref<{
   id: string,
@@ -46,12 +44,18 @@ const quickhelp_list = ref([]) as Ref<{
   date_updated: { seconds: string }
 }[]>;
 
+const _stats = ref<Record<string, any> | undefined>(undefined);
+
+const _auth = new Auth();
+
+const reduce = (arr: any[], field = 'count') => {
+  return arr.reduce((a: number, b: any) => a + b[field], 0);
+}
 
 const series = ref([
   {
     name: 'Number of Active Farmers',
-    // array of 12 random number
-    data: [13, 12, 32, 41, 15, 61, 17, 18, 19, 10, 11, 12]
+    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   }
 ])
 
@@ -87,6 +91,19 @@ onMounted(() => {
 });
 
 const getList = () => {
+  _auth.stats().then((res) => {
+
+
+    _stats.value = res.body;
+
+    res.body.stats.forEach((stat: any) => {
+      series.value[0].data[stat.month - 1] = stat.count;
+    });
+
+
+  })
+
+
   // new Users().getUsers().then((res) => {
   //   users_list.value = res;
   // });

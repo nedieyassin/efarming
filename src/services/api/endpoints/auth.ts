@@ -10,6 +10,10 @@ export class Auth {
         return service.post('/auth/login').send(form);
     }
 
+    public stats() {
+        return service.get('/auth/stats');
+    }
+
     public updateName(form: { id: string, full_name: string }) {
         return service.put('/auth/update-name/' + form.id).send(form);
     }
